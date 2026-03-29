@@ -1,0 +1,100 @@
+<main class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="w-full max-w-sm">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl font-semibold text-gray-900">Sign in</h1>
+        <p class="mt-1 text-sm text-gray-500">Enter your credentials to continue</p>
+      </div>
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        novalidate
+        aria-label="Sign in form"
+      >
+        <div class="space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              class="w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [class.border-red-500]="emailInvalid()"
+              [class.border-gray-300]="!emailInvalid()"
+              [attr.aria-invalid]="emailInvalid()"
+              aria-describedby="email-error"
+              placeholder="you@example.com"
+            />
+            @if (emailInvalid()) {
+              <p id="email-error" class="mt-1 text-xs text-red-600" role="alert">
+                Please enter a valid email address.
+              </p>
+            }
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              autocomplete="current-password"
+              class="w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [class.border-red-500]="passwordInvalid()"
+              [class.border-gray-300]="!passwordInvalid()"
+              [attr.aria-invalid]="passwordInvalid()"
+              aria-describedby="password-error"
+              placeholder="••••••••"
+            />
+            @if (passwordInvalid()) {
+              <p id="password-error" class="mt-1 text-xs text-red-600" role="alert">
+                Password must be at least 6 characters.
+              </p>
+            }
+          </div>
+        </div>
+
+        @if (errorMessage()) {
+          <div
+            class="mt-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700"
+            role="alert"
+            aria-live="assertive"
+          >
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="mt-6 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="loading()"
+          [attr.aria-busy]="loading()"
+        >
+          @if (loading()) {
+            <span class="inline-flex items-center gap-2">
+              <svg
+                class="animate-spin h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Signing in…
+            </span>
+          } @else {
+            Sign in
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+</main>

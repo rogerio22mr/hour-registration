@@ -1,0 +1,154 @@
+<dialog
+  #dialog
+  class="w-full max-w-md rounded-2xl border border-gray-200 p-0 shadow-xl backdrop:bg-black/40"
+  aria-labelledby="dialog-title"
+  aria-modal="true"
+>
+  <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+    <h2 id="dialog-title" class="text-base font-semibold text-gray-900">
+      {{ isEditing() ? 'Edit work item' : 'Add work item' }}
+    </h2>
+    <button
+      type="button"
+      class="rounded-lg p-1 text-gray-400 hover:text-gray-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      (click)="onCancel()"
+      aria-label="Close dialog"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    novalidate
+    class="px-6 py-5 space-y-4"
+    aria-label="Add work item form"
+  >
+    <div>
+      <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+        Title <span aria-hidden="true">*</span>
+      </label>
+      <input
+        id="title"
+        type="text"
+        formControlName="title"
+        class="w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        [class.border-red-500]="titleInvalid()"
+        [class.border-gray-300]="!titleInvalid()"
+        [attr.aria-invalid]="titleInvalid()"
+        aria-describedby="title-error"
+        placeholder="What did you work on?"
+      />
+      @if (titleInvalid()) {
+        <p id="title-error" class="mt-1 text-xs text-red-600" role="alert">Title is required.</p>
+      }
+    </div>
+
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+        Description
+      </label>
+      <textarea
+        id="description"
+        formControlName="description"
+        rows="3"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        placeholder="Optional details…"
+      ></textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">
+          Start <span aria-hidden="true">*</span>
+        </label>
+        <input
+          id="start_time"
+          type="time"
+          formControlName="start_time"
+          class="w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [class.border-red-500]="startTimeInvalid()"
+          [class.border-gray-300]="!startTimeInvalid()"
+          [attr.aria-invalid]="startTimeInvalid()"
+          aria-describedby="start-time-error"
+          (keydown)="fillCurrentTime('start_time', $event)"
+        />
+        @if (startTimeInvalid()) {
+          <p id="start-time-error" class="mt-1 text-xs text-red-600" role="alert">Required.</p>
+        }
+      </div>
+
+      <div>
+        <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">
+          End <span class="text-gray-400 font-normal text-xs">(optional)</span>
+        </label>
+        <input
+          id="end_time"
+          type="time"
+          formControlName="end_time"
+          class="w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [class.border-red-500]="endTimeBeforeStart()"
+          [class.border-gray-300]="!endTimeBeforeStart()"
+          [attr.aria-invalid]="endTimeBeforeStart()"
+          aria-describedby="end-time-error"
+          (keydown)="fillCurrentTime('end_time', $event)"
+        />
+        @if (endTimeBeforeStart()) {
+          <p id="end-time-error" class="mt-1 text-xs text-red-600" role="alert">Must be after start.</p>
+        }
+      </div>
+    </div>
+
+    @if (hoursDisplay()) {
+      <div
+        class="flex items-center justify-between rounded-lg bg-blue-50 border border-blue-100 px-4 py-2.5"
+        aria-live="polite"
+        aria-label="Calculated duration"
+      >
+        <span class="text-sm text-blue-700">Duration</span>
+        <span class="text-sm font-bold text-blue-700">{{ hoursDisplay() }}</span>
+      </div>
+    }
+
+    @if (error()) {
+      <div
+        class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700"
+        role="alert"
+        aria-live="assertive"
+      >
+        {{ error() }}
+      </div>
+    }
+
+    <div class="flex gap-3 pt-1">
+      <button
+        type="button"
+        class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="loading()"
+        [attr.aria-busy]="loading()"
+      >
+        @if (loading()) {
+          <span class="inline-flex items-center gap-2">
+            <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Saving…
+          </span>
+        } @else {
+          {{ isEditing() ? 'Update' : 'Save' }}
+        }
+      </button>
+    </div>
+  </form>
+</dialog>

@@ -1,59 +1,99 @@
-# HourRegistration
+# Hour Registration
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.5.
+> This project was built as a study using [Claude Code](https://claude.ai/claude-code), Anthropic's AI coding assistant.
 
-## Development server
+A personal time-tracking web app built with Angular 21 and Supabase. Log daily work items with start/end times, navigate between days, and keep a clean record of hours worked.
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
+- **Authentication** — email/password login via Supabase Auth
+- **Daily view** — browse any day with previous/next navigation
+- **Work items** — create, edit and delete entries per day
+- **Time calculation** — hours computed automatically from start and end timestamps (float with 2 decimals)
+- **Open-ended entries** — end time is optional; hours default to 0 until filled in
+- **Quick time fill** — press `h` on any time field to insert the current time
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Angular 21 (standalone components, signals) |
+| Backend / Auth | Supabase |
+| Styling | Tailwind CSS 4 |
+| Language | TypeScript 5.9 (strict) |
+| Testing | Vitest |
+
+## Supabase table
+
+```sql
+create table work_items (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid references auth.users not null,
+  title       text not null,
+  description text not null default '',
+  work_date   date not null,
+  start_time  timestamptz not null,
+  end_time    timestamptz,
+  hours       float8 not null default 0,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+
+-- Enable RLS
+alter table work_items enable row level security;
+
+create policy "Users can manage their own work items"
+  on work_items for all
+  using (auth.uid() = user_id);
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Getting started
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 1. Clone and install
 
 ```bash
-ng generate component component-name
+git clone <repo-url>
+cd hour-registration
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 2. Configure Supabase
+
+Edit `src/environments/environment.ts` with your project credentials:
+
+```ts
+export const environment = {
+  production: false,
+  supabase: {
+    url: 'https://<project-id>.supabase.co',
+    anonKey: '<your-anon-key>',
+  },
+};
+```
+
+### 3. Start the dev server
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+Open `http://localhost:4200` in your browser.
 
-To build the project run:
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Start development server |
+| `npm run build` | Production build + generate Netlify `_redirects` |
+| `npm run watch` | Development build in watch mode |
+| `npm test` | Run unit tests with Vitest |
+
+## Deployment
+
+The build script generates a `_redirects` file inside `dist/hour-registration/browser/` for single-page app routing on Netlify:
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Then deploy the `dist/hour-registration/browser/` folder.
