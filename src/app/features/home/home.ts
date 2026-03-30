@@ -19,6 +19,7 @@ export class HomeComponent {
   private readonly router = inject(Router);
 
   private readonly todayIso = new Date().toISOString().slice(0, 10);
+  readonly userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   readonly selectedDate = signal(new Date());
   readonly selectedDateIso = computed(() => this.selectedDate().toISOString().slice(0, 10));
@@ -35,7 +36,10 @@ export class HomeComponent {
   readonly deleteError = signal<string | null>(null);
 
   readonly totalHours = computed(() =>
-    this.entries().reduce((sum, entry) => sum + entry.hours, 0),
+    this.entries().reduce(
+      (sum, entry) => sum + entry.hour_entries.reduce((s, h) => s + h.hours, 0),
+      0,
+    ),
   );
 
   readonly formWorkDate = computed(() => this.editingItem()?.work_date ?? this.selectedDateIso());
@@ -81,6 +85,10 @@ export class HomeComponent {
     this.selectedDate.set(new Date());
   }
 
+  entryTotalHours(entry: WorkItem): number {
+    return entry.hour_entries.reduce((s, h) => s + h.hours, 0);
+  }
+
   formatHours(hours: number): string {
     const h = Math.floor(hours);
     const m = Math.round((hours - h) * 60);
@@ -88,17 +96,19 @@ export class HomeComponent {
   }
 
   onWorkItemSaved(item: WorkItem) {
+    const sortByFirstEntry = (a: WorkItem, b: WorkItem) => {
+      const at = a.hour_entries[0]?.start_time ?? '';
+      const bt = b.hour_entries[0]?.start_time ?? '';
+      return at.localeCompare(bt);
+    };
+
     if (this.editingItem()) {
       this.entries.update((list) =>
-        list
-          .map((e) => (e.id === item.id ? item : e))
-          .sort((a, b) => a.start_time.localeCompare(b.start_time)),
+        list.map((e) => (e.id === item.id ? item : e)).sort(sortByFirstEntry),
       );
       this.editingItem.set(null);
     } else {
-      this.entries.update((list) =>
-        [...list, item].sort((a, b) => a.start_time.localeCompare(b.start_time)),
-      );
+      this.entries.update((list) => [...list, item].sort(sortByFirstEntry));
       this.showAddForm.set(false);
     }
   }
