@@ -5,10 +5,11 @@ import { WorkItemService } from '../../core/services/work-item.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { WorkItem } from '../../core/models/work-item.model';
 import { AddWorkItemComponent } from './add-work-item/add-work-item';
+import { CalendarComponent } from './calendar/calendar';
 
 @Component({
   selector: 'app-home',
-  imports: [DatePipe, DecimalPipe, AddWorkItemComponent],
+  imports: [DatePipe, DecimalPipe, AddWorkItemComponent, CalendarComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,11 +30,13 @@ export class HomeComponent {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
 
+  readonly showCalendar = signal(false);
   readonly showAddForm = signal(false);
   readonly editingItem = signal<WorkItem | null>(null);
   readonly deletingItemId = signal<string | null>(null);
   readonly deleteLoading = signal(false);
   readonly deleteError = signal<string | null>(null);
+  readonly copiedItemId = signal<string | null>(null);
 
   readonly totalHours = computed(() =>
     this.entries().reduce(
@@ -85,8 +88,21 @@ export class HomeComponent {
     this.selectedDate.set(new Date());
   }
 
+  selectDate(date: Date) {
+    this.selectedDate.set(date);
+    this.showCalendar.set(false);
+  }
+
   entryTotalHours(entry: WorkItem): number {
     return entry.hour_entries.reduce((s, h) => s + h.hours, 0);
+  }
+
+  async copyHours(entry: WorkItem) {
+    const total = this.entryTotalHours(entry);
+    const decimal = total.toFixed(2);
+    await navigator.clipboard.writeText(decimal);
+    this.copiedItemId.set(entry.id);
+    setTimeout(() => this.copiedItemId.set(null), 2000);
   }
 
   formatHours(hours: number): string {

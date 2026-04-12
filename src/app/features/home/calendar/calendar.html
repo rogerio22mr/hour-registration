@@ -1,0 +1,101 @@
+<div
+  class="bg-white border border-gray-200 rounded-xl shadow-lg p-3"
+  role="group"
+  [attr.aria-label]="'Calendar, ' + (viewMonth() | date: 'MMMM yyyy')"
+>
+  <!-- Month navigation header -->
+  <div class="flex items-center justify-between mb-2 px-1">
+    <button
+      type="button"
+      class="rounded-lg p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      (click)="prevMonth()"
+      aria-label="Previous month"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+    </button>
+
+    <span class="text-sm font-semibold text-gray-800" aria-live="polite" aria-atomic="true">
+      {{ viewMonth() | date: 'MMMM yyyy' }}
+    </span>
+
+    <button
+      type="button"
+      class="rounded-lg p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+      (click)="nextMonth()"
+      [disabled]="!canGoNextMonth()"
+      aria-label="Next month"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Calendar grid -->
+  <table class="w-full border-collapse" role="grid" [attr.aria-label]="viewMonth() | date: 'MMMM yyyy'">
+    <thead>
+      <tr role="row">
+        @for (day of weekDays; track day) {
+          <th
+            scope="col"
+            role="columnheader"
+            class="text-center text-xs font-medium text-gray-400 py-1.5 w-9"
+            [attr.abbr]="day"
+          >
+            {{ day }}
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (week of calendarWeeks(); track $index) {
+        <tr role="row">
+          @for (day of week; track $index) {
+            <td role="gridcell" class="p-0 text-center" [attr.aria-disabled]="day?.isFuture ? true : null">
+              @if (day === null) {
+                <span class="block w-9 h-9"></span>
+              } @else {
+                <button
+                  type="button"
+                  class="w-9 h-9 mx-auto flex items-center justify-center rounded-full text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed"
+                  [class.bg-blue-600]="day.isSelected"
+                  [class.text-white]="day.isSelected"
+                  [class.font-semibold]="day.isSelected || day.isToday"
+                  [class.ring-2]="day.isToday && !day.isSelected"
+                  [class.ring-blue-500]="day.isToday && !day.isSelected"
+                  [class.ring-offset-1]="day.isToday && !day.isSelected"
+                  [class.text-blue-600]="day.isToday && !day.isSelected"
+                  [class.text-gray-700]="!day.isSelected && !day.isFuture && !day.isToday"
+                  [class.text-gray-300]="day.isFuture"
+                  [class.hover:bg-blue-50]="!day.isSelected && !day.isFuture"
+                  [disabled]="day.isFuture"
+                  [attr.aria-label]="day.date | date: 'EEEE, MMMM d, yyyy'"
+                  [attr.aria-selected]="day.isSelected"
+                  [attr.aria-current]="day.isToday ? 'date' : null"
+                  (click)="selectDay(day)"
+                >
+                  {{ day.dayNumber }}
+                </button>
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Today shortcut -->
+  @if (!isViewingCurrentMonth()) {
+    <div class="mt-2 pt-2 border-t border-gray-100 flex justify-center">
+      <button
+        type="button"
+        class="text-xs font-medium text-blue-600 hover:text-blue-800 px-3 py-1 rounded-lg hover:bg-blue-50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        (click)="goToToday()"
+      >
+        Today
+      </button>
+    </div>
+  }
+</div>
