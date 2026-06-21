@@ -1,14 +1,60 @@
-<div class="min-h-screen bg-gray-50">
-  <header class="bg-white border-b border-gray-200 px-4 py-4">
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 transition-colors">
+  <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800 px-4 py-4 transition-colors">
     <div class="max-w-2xl mx-auto flex items-center justify-between">
-      <h1 class="text-lg font-semibold text-gray-900">Hour Registration</h1>
-      <button
-        type="button"
-        class="text-sm text-gray-500 hover:text-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded"
-        (click)="signOut()"
-      >
-        Sign out
-      </button>
+      <h1 class="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
+        Hour Registration
+      </h1>
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+          (click)="exportDay()"
+          [disabled]="loading() || entries().length === 0"
+          aria-label="Export this day as CSV"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+        <a
+          routerLink="/summary"
+          class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          aria-label="View weekly summary"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Week
+        </a>
+        <button
+          type="button"
+          class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          (click)="toggleTheme()"
+          [attr.aria-label]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+          [attr.aria-pressed]="isDark()"
+        >
+          @if (isDark()) {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          }
+        </button>
+        <button
+          type="button"
+          class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded px-2 py-1"
+          (click)="signOut()"
+        >
+          Sign out
+        </button>
+      </div>
     </div>
   </header>
 
@@ -20,7 +66,7 @@
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             (click)="previousDay()"
             aria-label="Previous day"
           >
@@ -31,13 +77,13 @@
 
           <!-- Date display -->
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-blue-600 uppercase tracking-wide">
+            <p class="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
               {{ isToday() ? 'Today' : (selectedDate() | date: 'EEEE') }}
             </p>
-            <h2 id="date-heading" class="text-3xl font-bold text-gray-900 mt-1 truncate">
+            <h2 id="date-heading" class="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1 truncate">
               {{ selectedDate() | date: 'MMMM d' }}
             </h2>
-            <p class="text-sm text-gray-500 mt-0.5">{{ selectedDate() | date: 'yyyy' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ selectedDate() | date: 'yyyy' }}</p>
           </div>
 
           <!-- Calendar toggle + next day -->
@@ -47,9 +93,13 @@
               class="rounded-lg p-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
               [class.text-blue-600]="showCalendar()"
               [class.bg-blue-50]="showCalendar()"
+              [class.dark:bg-blue-950]="showCalendar()"
+              [class.dark:text-blue-400]="showCalendar()"
               [class.text-gray-400]="!showCalendar()"
               [class.hover:text-gray-700]="!showCalendar()"
               [class.hover:bg-gray-100]="!showCalendar()"
+              [class.dark:hover:text-gray-200]="!showCalendar()"
+              [class.dark:hover:bg-gray-800]="!showCalendar()"
               [attr.aria-expanded]="showCalendar()"
               aria-controls="calendar-panel"
               aria-label="Open calendar"
@@ -65,7 +115,7 @@
 
             <button
               type="button"
-              class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+              class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
               (click)="nextDay()"
               [disabled]="isToday()"
               aria-label="Next day"
@@ -86,7 +136,7 @@
           ></div>
           <div
             id="calendar-panel"
-            class="absolute right-0 z-20 mt-2 w-72"
+            class="absolute right-0 z-20 mt-2 w-72 hr-animate-pop"
           >
             <app-calendar
               [selectedDate]="selectedDate()"
@@ -99,7 +149,7 @@
           <div class="mt-2 flex justify-end">
             <button
               type="button"
-              class="text-xs font-medium text-blue-600 hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded"
+              class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded"
               (click)="goToToday()"
             >
               Go to today
@@ -111,13 +161,39 @@
 
       @if (!loading() && entries().length > 0) {
         <div
-          class="mb-6 bg-blue-50 border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between"
+          class="mb-6 rounded-2xl px-5 py-4 text-white shadow-lg shadow-blue-500/20 bg-gradient-to-br transition-colors hr-animate-in"
+          [class.from-blue-600]="!goalReached()"
+          [class.to-indigo-600]="!goalReached()"
+          [class.from-emerald-500]="goalReached()"
+          [class.to-green-600]="goalReached()"
           aria-label="Total hours today"
         >
-          <span class="text-sm font-medium text-blue-700">Total today</span>
-          <div class="flex items-baseline gap-2">
-            <span class="text-2xl font-bold text-blue-700">{{ formatHours(totalHours()) }}</span>
-            <span class="text-sm font-medium text-blue-500 tabular-nums" [attr.aria-label]="(totalHours() | number: '1.2-2') + ' hours decimal'">{{ totalHours() | number: '1.2-2' }}h</span>
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-white/80">
+              {{ goalReached() ? 'Daily goal reached 🎉' : 'Total today' }}
+            </span>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-bold">{{ formatHours(totalHours()) }}</span>
+              <span class="text-sm font-medium text-white/70 tabular-nums" [attr.aria-label]="(totalHours() | number: '1.2-2') + ' hours decimal'">{{ totalHours() | number: '1.2-2' }}h</span>
+            </div>
+          </div>
+
+          <!-- Daily goal progress bar -->
+          <div class="mt-3">
+            <div
+              class="h-2 w-full rounded-full bg-white/25 overflow-hidden"
+              role="progressbar"
+              [attr.aria-valuenow]="goalProgress()"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-label]="'Progress toward ' + dailyGoalHours + ' hour daily goal'"
+            >
+              <div
+                class="h-full rounded-full bg-white transition-all duration-500 ease-out"
+                [style.width.%]="goalProgress()"
+              ></div>
+            </div>
+            <p class="mt-1.5 text-xs text-white/70">{{ goalProgress() }}% of {{ dailyGoalHours }}h goal</p>
           </div>
         </div>
       }
@@ -125,12 +201,12 @@
 
     <section aria-labelledby="items-heading">
       <div class="flex items-center justify-between mb-3">
-        <h3 id="items-heading" class="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+        <h3 id="items-heading" class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
           Work items
         </h3>
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm shadow-blue-500/30 transition hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           (click)="showAddForm.set(true)"
           aria-label="Add new work item"
         >
@@ -144,15 +220,15 @@
       @if (loading()) {
         <ul aria-label="Loading work items" class="space-y-3">
           @for (_ of [1, 2, 3]; track $index) {
-            <li class="bg-white rounded-xl border border-gray-200 p-4 animate-pulse" aria-hidden="true">
-              <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-              <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+            <li class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 animate-pulse" aria-hidden="true">
+              <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2"></div>
+              <div class="h-3 bg-gray-100 dark:bg-gray-700/60 rounded w-1/3"></div>
             </li>
           }
         </ul>
       } @else if (error()) {
         <div
-          class="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700"
+          class="rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 px-4 py-3 text-sm text-red-700 dark:text-red-300"
           role="alert"
           aria-live="assertive"
         >
@@ -160,33 +236,77 @@
         </div>
       } @else if (entries().length === 0) {
         <div
-          class="bg-white rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center"
+          class="bg-white dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 px-6 py-12 text-center hr-animate-in"
           role="status"
         >
-          <p class="text-gray-400 text-sm">No work items for today.</p>
+          <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-500 dark:text-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <polyline points="12 7 12 12 15 14"/>
+            </svg>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">No work items for this day.</p>
+          <button
+            type="button"
+            class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded"
+            (click)="showAddForm.set(true)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Add your first item
+          </button>
         </div>
       } @else {
         <ul class="space-y-3" aria-label="Work items for today">
           @for (entry of entries(); track entry.id) {
             <li
-              class="bg-white rounded-xl border border-gray-200 px-5 py-4"
+              class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 shadow-sm hover:shadow-md transition-all hr-animate-in"
+              [class.border-green-200]="entry.approved && deletingItemId() !== entry.id"
+              [class.bg-green-50]="entry.approved && deletingItemId() !== entry.id"
+              [class.dark:bg-green-950/30]="entry.approved && deletingItemId() !== entry.id"
+              [class.dark:border-green-900]="entry.approved && deletingItemId() !== entry.id"
               [class.border-red-200]="deletingItemId() === entry.id"
+              [class.dark:border-red-900]="deletingItemId() === entry.id"
             >
-              <div class="flex items-start justify-between gap-3">
-                <p class="text-sm font-semibold text-gray-900 leading-snug flex-1">
-                  {{ entry.title }}
-                </p>
+              <!-- Accent stripe -->
+              <span
+                class="absolute left-0 top-0 h-full w-1"
+                [class.bg-green-400]="entry.approved"
+                [class.bg-blue-400]="!entry.approved"
+                aria-hidden="true"
+              ></span>
+
+              <div class="flex items-start justify-between gap-3 pl-1">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug">
+                      {{ entry.title }}
+                    </p>
+                    @if (entry.approved) {
+                      <span
+                        class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
+                        aria-label="Hours approved"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Approved
+                      </span>
+                    }
+                  </div>
+                </div>
                 <div class="flex items-center gap-1 shrink-0">
                   @if (entryTotalHours(entry) > 0) {
-                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
                       {{ formatHours(entryTotalHours(entry)) }}
                     </span>
-                    <span class="text-xs text-gray-400 tabular-nums" [attr.aria-label]="(entryTotalHours(entry) | number: '1.2-2') + ' hours'">
+                    <span class="text-xs text-gray-400 dark:text-gray-500 tabular-nums" [attr.aria-label]="(entryTotalHours(entry) | number: '1.2-2') + ' hours'">
                       {{ entryTotalHours(entry) | number: '1.2-2' }}h
                     </span>
                     <button
                       type="button"
-                      class="rounded-lg p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                      class="rounded-lg p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                       [attr.aria-label]="'Copy hours for ' + entry.title"
                       (click)="copyHours(entry)"
                     >
@@ -202,10 +322,52 @@
                       }
                     </button>
                   }
+
+                  <!-- Approve / Unapprove button -->
                   <button
                     type="button"
-                    class="rounded-lg p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                    class="rounded-lg p-1.5 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                    [class.text-green-600]="entry.approved"
+                    [class.bg-green-100]="entry.approved"
+                    [class.dark:bg-green-900/50]="entry.approved"
+                    [class.dark:text-green-400]="entry.approved"
+                    [class.hover:bg-green-200]="entry.approved"
+                    [class.text-gray-400]="!entry.approved"
+                    [class.hover:text-green-600]="!entry.approved"
+                    [class.hover:bg-green-50]="!entry.approved"
+                    [class.dark:hover:bg-green-950/50]="!entry.approved"
+                    [attr.aria-label]="entry.approved ? 'Unapprove ' + entry.title : 'Approve ' + entry.title"
+                    [attr.aria-pressed]="entry.approved"
+                    [disabled]="approvingItemId() === entry.id"
+                    [attr.aria-busy]="approvingItemId() === entry.id"
+                    (click)="toggleApprove(entry)"
+                  >
+                    @if (approvingItemId() === entry.id) {
+                      <!-- spinner -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                      </svg>
+                    } @else if (entry.approved) {
+                      <!-- filled check shield — approved -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                      </svg>
+                    } @else {
+                      <!-- outline check shield — not approved -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <polyline points="9 12 11 14 15 10"/>
+                      </svg>
+                    }
+                  </button>
+
+                  <button
+                    type="button"
+                    class="rounded-lg p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
                     [attr.aria-label]="'Edit ' + entry.title"
+                    [disabled]="entry.approved"
+                    [attr.title]="entry.approved ? 'Unapprove before editing' : null"
                     (click)="editingItem.set(entry)"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -214,8 +376,10 @@
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                    class="rounded-lg p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
                     [attr.aria-label]="'Delete ' + entry.title"
+                    [disabled]="entry.approved"
+                    [attr.title]="entry.approved ? 'Unapprove before deleting' : null"
                     (click)="deletingItemId.set(entry.id); deleteError.set(null)"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -226,35 +390,39 @@
               </div>
 
               @if (entry.description) {
-                <p class="mt-1.5 text-xs text-gray-500 leading-relaxed">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-1">
                   {{ entry.description }}
                 </p>
               }
 
               @if (entry.hour_entries.length > 0) {
-                <ul class="mt-2 space-y-0.5" aria-label="Time entries">
+                <ul class="mt-2 space-y-0.5 pl-1" aria-label="Time entries">
                   @for (hourEntry of entry.hour_entries; track hourEntry.id) {
-                    <li class="text-xs text-gray-400 tabular-nums">
+                    <li class="text-xs text-gray-400 dark:text-gray-500 tabular-nums">
                       {{ hourEntry.start_time | date: 'HH:mm' : userTimeZone }}
                       @if (hourEntry.end_time) {
                         – {{ hourEntry.end_time | date: 'HH:mm' : userTimeZone }}
-                        <span class="text-gray-300 ml-1">({{ formatHours(hourEntry.hours) }})</span>
+                        <span class="text-gray-300 dark:text-gray-600 ml-1">({{ formatHours(hourEntry.hours) }})</span>
                       }
                     </li>
                   }
                 </ul>
               }
 
+              @if (approveErrorItemId() === entry.id) {
+                <p class="mt-2 text-xs text-red-600 dark:text-red-400 pl-1" role="alert">{{ approveError() }}</p>
+              }
+
               @if (deletingItemId() === entry.id) {
-                <div class="mt-3 pt-3 border-t border-red-100">
-                  <p class="text-xs text-red-700 font-medium mb-2">Delete this work item?</p>
+                <div class="mt-3 pt-3 border-t border-red-100 dark:border-red-900/60">
+                  <p class="text-xs text-red-700 dark:text-red-300 font-medium mb-2">Delete this work item?</p>
                   @if (deleteError()) {
-                    <p class="text-xs text-red-600 mb-2" role="alert">{{ deleteError() }}</p>
+                    <p class="text-xs text-red-600 dark:text-red-400 mb-2" role="alert">{{ deleteError() }}</p>
                   }
                   <div class="flex gap-2">
                     <button
                       type="button"
-                      class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
+                      class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
                       [disabled]="deleteLoading()"
                       (click)="deletingItemId.set(null)"
                     >

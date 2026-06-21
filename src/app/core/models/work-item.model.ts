@@ -15,6 +15,9 @@ export interface WorkItem {
   title: string;
   description: string;
   work_date: string;
+  approved: boolean;
+  approved_at: string | null;
+  approved_by: string | null;
   created_at: string;
   updated_at: string;
   hour_entries: WorkItemHour[];

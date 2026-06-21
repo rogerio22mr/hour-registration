@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { toLocalIso } from '../../../core/utils/date.util';
 
 export interface CalendarDay {
   date: Date;
@@ -52,9 +53,9 @@ export class CalendarComponent {
     const view = this.viewMonth();
     const year = view.getFullYear();
     const month = view.getMonth();
-    const todayIso = this.toLocalIso(new Date());
-    const selectedIso = this.toLocalIso(this.selectedDate());
-    const maxIso = this.toLocalIso(this.maxDate());
+    const todayIso = toLocalIso(new Date());
+    const selectedIso = toLocalIso(this.selectedDate());
+    const maxIso = toLocalIso(this.maxDate());
 
     const firstDayOfWeek = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -67,7 +68,7 @@ export class CalendarComponent {
 
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d, 12, 0, 0);
-      const dateIso = this.toLocalIso(date);
+      const dateIso = toLocalIso(date);
       days.push({
         date,
         dayNumber: d,
@@ -122,12 +123,5 @@ export class CalendarComponent {
   selectDay(day: CalendarDay) {
     if (day.isFuture) return;
     this.dateSelected.emit(day.date);
-  }
-
-  private toLocalIso(d: Date): string {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
   }
 }

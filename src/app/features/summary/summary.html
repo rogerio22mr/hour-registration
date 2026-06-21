@@ -1,0 +1,226 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 transition-colors">
+  <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800 px-4 py-4 transition-colors">
+    <div class="max-w-2xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <a
+          routerLink="/"
+          class="rounded-lg p-2 -ml-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          aria-label="Back to day view"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </a>
+        <h1 class="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
+          Weekly Summary
+        </h1>
+      </div>
+      <div class="flex items-center gap-1">
+      <button
+        type="button"
+        class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+        (click)="exportCsv()"
+        [disabled]="loading() || !hasData()"
+        aria-label="Export this week as CSV"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        CSV
+      </button>
+      <button
+        type="button"
+        class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        (click)="toggleTheme()"
+        [attr.aria-label]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+        [attr.aria-pressed]="isDark()"
+      >
+        @if (isDark()) {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        }
+      </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-8" id="main-content">
+    <!-- Week navigation -->
+    <div class="flex items-center gap-2 mb-6">
+      <button
+        type="button"
+        class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        (click)="previousWeek()"
+        aria-label="Previous week"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <div class="flex-1 min-w-0 text-center">
+        <p class="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+          {{ isCurrentWeek() ? 'This week' : 'Week of' }}
+        </p>
+        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-50 mt-0.5 truncate">
+          {{ weekStart() | date: 'MMM d' }} – {{ weekEnd() | date: 'MMM d' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+        (click)="nextWeek()"
+        [disabled]="isCurrentWeek()"
+        aria-label="Next week"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    @if (!isCurrentWeek()) {
+      <div class="mb-4 flex justify-center">
+        <button
+          type="button"
+          class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded"
+          (click)="goToThisWeek()"
+        >
+          Go to this week
+        </button>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 px-4 py-3 text-sm text-red-700 dark:text-red-300" role="alert" aria-live="assertive">
+        {{ error() }}
+      </div>
+    } @else {
+      <!-- Stat cards -->
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="rounded-2xl px-4 py-3 text-white shadow-lg shadow-blue-500/20 bg-gradient-to-br from-blue-600 to-indigo-600">
+          <p class="text-xs font-medium text-white/70">Total</p>
+          @if (loading()) {
+            <div class="h-6 w-12 mt-1 rounded bg-white/30 animate-pulse"></div>
+          } @else {
+            <p class="text-xl font-bold mt-0.5">{{ formatHours(weekTotal()) }}</p>
+          }
+        </div>
+        <div class="rounded-2xl px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Avg / day</p>
+          @if (loading()) {
+            <div class="h-6 w-12 mt-1 rounded bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+          } @else {
+            <p class="text-xl font-bold mt-0.5 text-gray-900 dark:text-gray-100">{{ formatHours(dailyAverage()) }}</p>
+          }
+        </div>
+        <div class="rounded-2xl px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Days worked</p>
+          @if (loading()) {
+            <div class="h-6 w-12 mt-1 rounded bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+          } @else {
+            <p class="text-xl font-bold mt-0.5 text-gray-900 dark:text-gray-100">{{ activeDays() }}<span class="text-sm font-medium text-gray-400">/7</span></p>
+          }
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <section
+        class="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm p-5 mb-6"
+        aria-label="Hours per day"
+      >
+        @if (loading()) {
+          <div class="flex items-end justify-between gap-2 h-40" aria-hidden="true">
+            @for (_ of [1,2,3,4,5,6,7]; track $index) {
+              <div class="flex-1 rounded-t-lg bg-gray-100 dark:bg-gray-700 animate-pulse" style="height: 60%"></div>
+            }
+          </div>
+        } @else {
+          <ul class="flex items-end justify-between gap-2 h-40">
+            @for (day of days(); track day.iso) {
+              <li class="flex-1 flex flex-col items-center justify-end h-full">
+                <span class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1 tabular-nums" [class.opacity-0]="day.hours === 0">
+                  {{ day.hours | number: '1.0-1' }}
+                </span>
+                <div
+                  class="w-full rounded-t-lg transition-all duration-500 ease-out min-h-1"
+                  [class.bg-gradient-to-t]="day.hours > 0"
+                  [class.from-blue-500]="day.hours > 0 && day.hours < dailyGoalHours"
+                  [class.to-indigo-400]="day.hours > 0 && day.hours < dailyGoalHours"
+                  [class.from-emerald-500]="day.hours >= dailyGoalHours"
+                  [class.to-green-400]="day.hours >= dailyGoalHours"
+                  [class.bg-gray-100]="day.hours === 0"
+                  [class.dark:bg-gray-700]="day.hours === 0"
+                  [style.height.%]="barHeight(day.hours)"
+                  role="img"
+                  [attr.aria-label]="(day.date | date: 'EEEE') + ': ' + formatHours(day.hours)"
+                ></div>
+              </li>
+            }
+          </ul>
+        }
+        <ul class="flex items-center justify-between gap-2 mt-2">
+          @for (day of days(); track day.iso) {
+            <li class="flex-1 text-center">
+              <span
+                class="text-xs font-medium"
+                [class.text-blue-600]="day.isToday"
+                [class.dark:text-blue-400]="day.isToday"
+                [class.text-gray-400]="!day.isToday"
+                [class.dark:text-gray-500]="!day.isToday"
+              >
+                {{ day.date | date: 'EEEEE' }}
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Per-day breakdown -->
+      <section aria-label="Daily breakdown">
+        <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Breakdown</h3>
+        <ul class="space-y-2">
+          @for (day of days(); track day.iso) {
+            <li
+              class="flex items-center justify-between rounded-xl border px-4 py-3 transition-colors"
+              [class.bg-white]="!day.isToday"
+              [class.dark:bg-gray-800]="!day.isToday"
+              [class.border-gray-200]="!day.isToday"
+              [class.dark:border-gray-700]="!day.isToday"
+              [class.bg-blue-50]="day.isToday"
+              [class.dark:bg-blue-950/30]="day.isToday"
+              [class.border-blue-200]="day.isToday"
+              [class.dark:border-blue-900]="day.isToday"
+            >
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {{ day.date | date: 'EEEE' }}
+                  @if (day.isToday) { <span class="text-xs font-medium text-blue-600 dark:text-blue-400">· Today</span> }
+                </p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">
+                  {{ day.date | date: 'MMM d' }} ·
+                  {{ day.itemCount }} {{ day.itemCount === 1 ? 'item' : 'items' }}
+                </p>
+              </div>
+              @if (day.hours > 0) {
+                <span class="text-sm font-bold tabular-nums text-gray-900 dark:text-gray-100">{{ formatHours(day.hours) }}</span>
+              } @else {
+                <span class="text-sm text-gray-300 dark:text-gray-600">—</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </main>
+</div>

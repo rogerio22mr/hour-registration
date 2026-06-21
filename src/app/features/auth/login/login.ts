@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,9 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly supabase = inject(SupabaseService);
   private readonly router = inject(Router);
+  private readonly theme = inject(ThemeService);
+
+  readonly isDark = this.theme.isDark;
 
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -22,6 +26,10 @@ export class LoginComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  toggleTheme() {
+    this.theme.toggle();
+  }
 
   emailInvalid() {
     const ctrl = this.form.controls.email;
