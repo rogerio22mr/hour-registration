@@ -1,3 +1,56 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+/* Enable class-based dark mode (toggled via ThemeService on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Smooth theme transition for color-related properties */
+@layer base {
+  body {
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+}
+
+/* Card entrance animation */
+@keyframes hr-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hr-animate-in {
+  animation: hr-fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes hr-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  60% {
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hr-animate-pop {
+  animation: hr-pop-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-animate-in,
+  .hr-animate-pop {
+    animation: none;
+  }
+}

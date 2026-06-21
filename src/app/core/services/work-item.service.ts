@@ -31,6 +31,25 @@ export class WorkItemService {
       });
   }
 
+  /** Fetch all work items between two local ISO dates (inclusive), ordered by date. */
+  async getEntriesForRange(startDate: string, endDate: string): Promise<WorkItem[]> {
+    const { data, error } = await this.supabase
+      .from('work_items')
+      .select('*, hour_entries:work_item_hours(*)')
+      .gte('work_date', startDate)
+      .lte('work_date', endDate)
+      .order('work_date', { ascending: true });
+
+    if (error) throw error;
+
+    return ((data ?? []) as WorkItem[]).map((item) => ({
+      ...item,
+      hour_entries: [...(item.hour_entries ?? [])].sort((a, b) =>
+        a.start_time.localeCompare(b.start_time),
+      ),
+    }));
+  }
+
   async addWorkItem(
     item: Pick<WorkItem, 'title' | 'description' | 'work_date'>,
     hourEntries: HourEntryInput[],
@@ -87,6 +106,22 @@ export class WorkItemService {
   async deleteWorkItem(id: string): Promise<void> {
     const { error } = await this.supabase.from('work_items').delete().eq('id', id);
     if (error) throw error;
+  }
+
+  async approveWorkItem(id: string, approved: boolean): Promise<WorkItem> {
+    const {
+      data: { user },
+    } = await this.supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const patch = approved
+      ? { approved: true, approved_at: new Date().toISOString(), approved_by: user.id }
+      : { approved: false, approved_at: null, approved_by: null };
+
+    const { error } = await this.supabase.from('work_items').update(patch).eq('id', id);
+    if (error) throw error;
+
+    return this.fetchWorkItem(id);
   }
 
   private async fetchWorkItem(id: string): Promise<WorkItem> {

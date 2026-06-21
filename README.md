@@ -7,13 +7,21 @@ A personal time-tracking web app built with Angular 21 and Supabase. Log daily w
 ## Features
 
 - **Authentication** — email/password login via Supabase Auth
-- **Daily view** — browse any day with previous/next navigation
+- **Daily view** — browse any day with previous/next navigation and a calendar date picker
 - **Work items** — create, edit and delete entries per day
 - **Multiple time entries** — each work item supports multiple start/end time slots
 - **Time calculation** — hours computed automatically from start and end timestamps (float with 2 decimals)
 - **Open-ended entries** — end time is optional; hours default to 0 until filled in
+- **Approval workflow** — mark items as approved (locked from edit/delete) and unapprove them again
+- **Copy hours** — one-click copy of an item's total hours to the clipboard
+- **CSV export** — export the current day (home) or week (summary) to a CSV file, one row per time entry
+- **Toast notifications** — non-blocking feedback for save, approve, delete, copy and errors
+- **Daily goal progress** — a progress bar tracks the day's total against an 8-hour goal
+- **Weekly summary** — a `/summary` view with per-day bar chart, week total, average and days worked
+- **Dark mode** — light/dark theme toggle that follows the system preference and persists across sessions
+- **Progressive Web App** — installable and works offline via a service worker
 - **Quick time fill** — press `h` on any time field to insert the current time
-- **Timezone-aware display** — times are stored as UTC and displayed in the user's local timezone
+- **Timezone-aware** — times are stored as UTC and displayed in the user's local timezone; day selection uses local dates
 
 ## Tech stack
 
@@ -22,6 +30,7 @@ A personal time-tracking web app built with Angular 21 and Supabase. Log daily w
 | Framework | Angular 21 (standalone components, signals) |
 | Backend / Auth | Supabase |
 | Styling | Tailwind CSS 4 |
+| Offline / Install | `@angular/service-worker` (PWA) |
 | Language | TypeScript 5.9 (strict) |
 | Testing | Vitest |
 
@@ -72,6 +81,36 @@ create policy "Users can manage their own work item hours"
   using (auth.uid() = user_id);
 ```
 
+### Migration: add `approved` flag to `work_items`
+
+Adds approval tracking to work items. Run this in the Supabase SQL editor — it is
+idempotent (safe to re-run).
+
+```sql
+-- 1. Add the columns (default false so existing rows are "not approved")
+alter table work_items
+  add column if not exists approved     boolean     not null default false,
+  add column if not exists approved_at  timestamptz,
+  add column if not exists approved_by  uuid references auth.users(id);
+
+-- 2. Index for filtering by approval status
+create index if not exists idx_work_items_approved on work_items(approved);
+
+-- 3. RLS policy — allow the row owner to approve/unapprove their own items
+--    (drop first to make this re-runnable)
+drop policy if exists "Users can approve their own work items" on work_items;
+
+create policy "Users can approve their own work items"
+  on work_items
+  for update
+  using  (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+```
+
+This adds the `approved`, `approved_at` and `approved_by` columns (existing rows
+default to "not approved"), an index for filtering by approval status, and an RLS
+policy so a user can approve/unapprove only their own items.
+
 ## Getting started
 
 ### 1. Clone and install
@@ -116,6 +155,22 @@ Open `http://localhost:4200` in your browser.
 | `npm run build` | Production build + generate Netlify `_redirects` |
 | `npm run watch` | Development build in watch mode |
 | `npm test` | Run unit tests with Vitest |
+
+## Progressive Web App
+
+The app ships with a service worker (`@angular/service-worker`) configured via
+[`ngsw-config.json`](./ngsw-config.json) and a web app manifest in
+`public/manifest.webmanifest`, making it installable on desktop and mobile and
+usable offline.
+
+The service worker is **only active in production builds** (`isDevMode()` disables
+it during development), so `npm start` runs without it. To test install/offline
+behavior, serve a production build over `localhost` or HTTPS:
+
+```bash
+npm run build
+npx http-server dist/hour-registration/browser -p 8080
+```
 
 ## Deployment
 

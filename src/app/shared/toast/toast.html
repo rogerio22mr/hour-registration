@@ -1,0 +1,65 @@
+<div
+  class="fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4 pointer-events-none"
+  aria-live="polite"
+  aria-atomic="false"
+>
+  @for (toast of toasts(); track toast.id) {
+    <div
+      class="hr-animate-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border px-4 py-3 shadow-lg"
+      [class.bg-white]="toast.kind === 'info'"
+      [class.dark:bg-gray-800]="toast.kind === 'info'"
+      [class.border-gray-200]="toast.kind === 'info'"
+      [class.dark:border-gray-700]="toast.kind === 'info'"
+      [class.bg-green-50]="toast.kind === 'success'"
+      [class.dark:bg-green-950]="toast.kind === 'success'"
+      [class.border-green-200]="toast.kind === 'success'"
+      [class.dark:border-green-900]="toast.kind === 'success'"
+      [class.bg-red-50]="toast.kind === 'error'"
+      [class.dark:bg-red-950]="toast.kind === 'error'"
+      [class.border-red-200]="toast.kind === 'error'"
+      [class.dark:border-red-900]="toast.kind === 'error'"
+      [attr.role]="toast.kind === 'error' ? 'alert' : 'status'"
+    >
+      <span class="mt-0.5 shrink-0" aria-hidden="true">
+        @switch (toast.kind) {
+          @case ('success') {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          }
+          @case ('error') {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zM9 9a1 1 0 012 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+            </svg>
+          }
+          @default {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          }
+        }
+      </span>
+      <p
+        class="flex-1 text-sm font-medium"
+        [class.text-gray-800]="toast.kind === 'info'"
+        [class.dark:text-gray-100]="toast.kind === 'info'"
+        [class.text-green-800]="toast.kind === 'success'"
+        [class.dark:text-green-200]="toast.kind === 'success'"
+        [class.text-red-800]="toast.kind === 'error'"
+        [class.dark:text-red-200]="toast.kind === 'error'"
+      >
+        {{ toast.message }}
+      </p>
+      <button
+        type="button"
+        class="shrink-0 rounded p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        (click)="dismiss(toast.id)"
+        aria-label="Dismiss notification"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  }
+</div>
