@@ -3,6 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { WorkItemService } from '../../core/services/work-item.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { LocaleService } from '../../core/services/locale.service';
 import { ExportService } from '../../core/services/export.service';
 import { ToastService } from '../../core/services/toast.service';
 import { WorkItem } from '../../core/models/work-item.model';
@@ -29,6 +30,8 @@ export class SummaryComponent {
   private readonly theme = inject(ThemeService);
   private readonly exportService = inject(ExportService);
   private readonly toast = inject(ToastService);
+  protected readonly loc = inject(LocaleService);
+  protected readonly t = this.loc.t;
 
   readonly dailyGoalHours = 8;
   readonly isDark = this.theme.isDark;
@@ -79,7 +82,7 @@ export class SummaryComponent {
     try {
       this.items.set(await this.workItemService.getEntriesForRange(start, end));
     } catch (err) {
-      this.error.set(err instanceof Error ? err.message : 'Failed to load weekly summary.');
+      this.error.set(err instanceof Error ? err.message : this.t('error.loadSummary'));
     } finally {
       this.loading.set(false);
     }
@@ -105,14 +108,14 @@ export class SummaryComponent {
   exportCsv() {
     const items = this.items();
     if (!items.length) {
-      this.toast.error('No hours to export for this week');
+      this.toast.error(this.t('toast.noHoursToExport'));
       return;
     }
     this.exportService.downloadCsv(
       items,
       `hours-${toLocalIso(this.weekStart())}_${toLocalIso(this.weekEnd())}`,
     );
-    this.toast.success('Weekly CSV exported');
+    this.toast.success(this.t('toast.weekExported'));
   }
 
   /** Bar height as a percentage of the tallest bar in the week. */

@@ -3,7 +3,8 @@
     type="button"
     class="absolute top-4 right-4 rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
     (click)="toggleTheme()"
-    [attr.aria-label]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+    [attr.aria-label]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
+    [attr.title]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
     [attr.aria-pressed]="isDark()"
   >
     @if (isDark()) {
@@ -24,20 +25,20 @@
   <div class="w-full max-w-sm">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-lg border border-gray-200 dark:border-gray-700 p-8 transition-colors">
       <div class="mb-8 text-center">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-50">Sign in</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Enter your credentials to continue</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-50">{{ t('login.signIn') }}</h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('login.subtitle') }}</p>
       </div>
 
       <form
         [formGroup]="form"
         (ngSubmit)="onSubmit()"
         novalidate
-        aria-label="Sign in form"
+        [attr.aria-label]="t('login.formAria')"
       >
         <div class="space-y-4">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email address
+              {{ t('login.email') }}
             </label>
             <input
               id="email"
@@ -54,14 +55,14 @@
             />
             @if (emailInvalid()) {
               <p id="email-error" class="mt-1 text-xs text-red-600" role="alert">
-                Please enter a valid email address.
+                {{ t('login.emailError') }}
               </p>
             }
           </div>
 
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Password
+              {{ t('login.password') }}
             </label>
             <input
               id="password"
@@ -78,7 +79,7 @@
             />
             @if (passwordInvalid()) {
               <p id="password-error" class="mt-1 text-xs text-red-600" role="alert">
-                Password must be at least 6 characters.
+                {{ t('login.passwordError') }}
               </p>
             }
           </div>
@@ -112,10 +113,10 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Signing in…
+              {{ t('login.signingIn') }}
             </span>
           } @else {
-            Sign in
+            {{ t('login.signIn') }}
           }
         </button>
       </form>

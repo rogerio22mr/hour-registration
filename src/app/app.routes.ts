@@ -15,6 +15,12 @@ export const routes: Routes = [
       import('./features/summary/summary').then((m) => m.SummaryComponent),
   },
   {
+    path: 'settings',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/settings/settings').then((m) => m.SettingsComponent),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login/login').then((m) => m.LoginComponent),

@@ -1,0 +1,220 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 transition-colors">
+  <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800 px-4 py-4 transition-colors">
+    <div class="max-w-2xl mx-auto flex items-center gap-2">
+      <a
+        routerLink="/"
+        class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        [attr.aria-label]="t('settings.back')"
+        [attr.title]="t('settings.back')"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </a>
+      <h1 class="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
+        {{ t('settings.title') }}
+      </h1>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-8" id="main-content">
+    <section aria-labelledby="accent-heading">
+      <h2 id="accent-heading" class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        {{ t('settings.accentColor') }}
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {{ t('settings.accentDescription') }}
+      </p>
+
+      <!-- Presets -->
+      <div class="mt-5">
+        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">{{ t('settings.presets') }}</h3>
+        <ul class="flex flex-wrap gap-2" [attr.aria-label]="t('settings.presets')">
+          @for (preset of presets; track preset.name) {
+            <li>
+              <button
+                type="button"
+                class="group flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                (click)="applyPreset(preset)"
+                [attr.aria-label]="t('settings.applyPreset', { name: t('preset.' + preset.name) })"
+              >
+                <span class="flex h-5 w-5 overflow-hidden rounded-full ring-1 ring-black/5" aria-hidden="true">
+                  <span class="h-full w-1/2" [style.background-color]="preset.light"></span>
+                  <span class="h-full w-1/2" [style.background-color]="preset.dark"></span>
+                </span>
+                {{ t('preset.' + preset.name) }}
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Custom pickers -->
+      <form [formGroup]="form" class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+          <label for="accent-light" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            {{ t('settings.lightModeAccent') }}
+          </label>
+          <div class="mt-2 flex items-center gap-3">
+            <input
+              id="accent-light"
+              type="color"
+              formControlName="light"
+              class="h-10 w-14 cursor-pointer rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent p-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            />
+            <span class="font-mono text-sm uppercase text-gray-600 dark:text-gray-300 tabular-nums">{{ lightAccent() }}</span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+          <label for="accent-dark" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            {{ t('settings.darkModeAccent') }}
+          </label>
+          <div class="mt-2 flex items-center gap-3">
+            <input
+              id="accent-dark"
+              type="color"
+              formControlName="dark"
+              class="h-10 w-14 cursor-pointer rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent p-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            />
+            <span class="font-mono text-sm uppercase text-gray-600 dark:text-gray-300 tabular-nums">{{ darkAccent() }}</span>
+          </div>
+        </div>
+      </form>
+
+      <!-- Live preview -->
+      <div class="mt-8">
+        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">{{ t('settings.preview') }}</h3>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <!-- Light preview -->
+          @let lp = lightAccent();
+          <figure class="rounded-2xl border border-gray-200 overflow-hidden shadow-sm" style="background-color: #f9fafb; color: #111827">
+            <figcaption class="px-4 py-2 text-xs font-semibold uppercase tracking-wide border-b border-black/5" style="color: #6b7280">
+              {{ t('settings.light') }}
+            </figcaption>
+            <div class="p-4 space-y-3">
+              <div class="rounded-xl px-4 py-3 text-white shadow-sm" [style.background]="gradient(lp)">
+                <p class="text-xs font-medium text-white/80">Total today</p>
+                <p class="text-xl font-bold">7.50h</p>
+                <div class="mt-2 h-1.5 w-full rounded-full bg-white/25 overflow-hidden">
+                  <div class="h-full rounded-full bg-white" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" tabindex="-1" aria-hidden="true" class="rounded-lg px-3 py-1.5 text-sm font-semibold text-white shadow-sm" [style.background-color]="lp">
+                  Add
+                </button>
+                <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [style.background-color]="softBg(lp, false)" [style.color]="softText(lp, false)">
+                  2.50h
+                </span>
+                <a href="#" tabindex="-1" aria-hidden="true" class="text-sm font-medium hover:underline" [style.color]="lp">Week</a>
+              </div>
+            </div>
+          </figure>
+
+          <!-- Dark preview -->
+          @let dp = darkAccent();
+          <figure class="rounded-2xl border border-gray-800 overflow-hidden shadow-sm" style="background-color: #030712; color: #f9fafb">
+            <figcaption class="px-4 py-2 text-xs font-semibold uppercase tracking-wide border-b border-white/10" style="color: #9ca3af">
+              {{ t('settings.dark') }}
+            </figcaption>
+            <div class="p-4 space-y-3">
+              <div class="rounded-xl px-4 py-3 text-white shadow-sm" [style.background]="gradient(dp)">
+                <p class="text-xs font-medium text-white/80">Total today</p>
+                <p class="text-xl font-bold">7.50h</p>
+                <div class="mt-2 h-1.5 w-full rounded-full bg-white/25 overflow-hidden">
+                  <div class="h-full rounded-full bg-white" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" tabindex="-1" aria-hidden="true" class="rounded-lg px-3 py-1.5 text-sm font-semibold text-white shadow-sm" [style.background-color]="dp">
+                  Add
+                </button>
+                <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [style.background-color]="softBg(dp, true)" [style.color]="softText(dp, true)">
+                  2.50h
+                </span>
+                <a href="#" tabindex="-1" aria-hidden="true" class="text-sm font-medium hover:underline" [style.color]="dp">Week</a>
+              </div>
+            </div>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-8 flex items-center gap-3">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-500/30 transition hover:bg-blue-700 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+          (click)="save()"
+          [disabled]="saving()"
+          [attr.aria-busy]="saving()"
+        >
+          @if (saving()) {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            {{ t('common.saving') }}
+          } @else {
+            {{ t('common.save') }}
+          }
+        </button>
+        <button
+          type="button"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          (click)="resetDefaults()"
+          [disabled]="isDefault()"
+        >
+          {{ t('settings.resetDefault') }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Language -->
+    <section aria-labelledby="language-heading" class="mt-10">
+      <h2 id="language-heading" class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        {{ t('settings.language') }}
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {{ t('settings.languageDescription') }}
+      </p>
+
+      <div
+        class="mt-4 inline-flex rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1"
+        role="group"
+        [attr.aria-label]="t('settings.language')"
+      >
+        <button
+          type="button"
+          class="rounded-lg px-4 py-1.5 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          [class.bg-blue-600]="lang() === 'en'"
+          [class.text-white]="lang() === 'en'"
+          [class.shadow-sm]="lang() === 'en'"
+          [class.text-gray-600]="lang() !== 'en'"
+          [class.dark:text-gray-300]="lang() !== 'en'"
+          [class.hover:bg-gray-100]="lang() !== 'en'"
+          [class.dark:hover:bg-gray-700]="lang() !== 'en'"
+          [attr.aria-pressed]="lang() === 'en'"
+          (click)="setLang('en')"
+        >
+          {{ t('settings.languageEn') }}
+        </button>
+        <button
+          type="button"
+          class="rounded-lg px-4 py-1.5 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          [class.bg-blue-600]="lang() === 'pt'"
+          [class.text-white]="lang() === 'pt'"
+          [class.shadow-sm]="lang() === 'pt'"
+          [class.text-gray-600]="lang() !== 'pt'"
+          [class.dark:text-gray-300]="lang() !== 'pt'"
+          [class.hover:bg-gray-100]="lang() !== 'pt'"
+          [class.dark:hover:bg-gray-700]="lang() !== 'pt'"
+          [attr.aria-pressed]="lang() === 'pt'"
+          (click)="setLang('pt')"
+        >
+          {{ t('settings.languagePt') }}
+        </button>
+      </div>
+    </section>
+  </main>
+</div>

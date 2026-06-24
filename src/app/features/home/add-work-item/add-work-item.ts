@@ -14,6 +14,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { WorkItemService } from '../../../core/services/work-item.service';
+import { LocaleService } from '../../../core/services/locale.service';
 import { WorkItem } from '../../../core/models/work-item.model';
 
 @Component({
@@ -28,6 +29,8 @@ export class AddWorkItemComponent implements OnInit, AfterViewInit {
 
   private readonly workItemService = inject(WorkItemService);
   private readonly fb = inject(FormBuilder);
+  protected readonly loc = inject(LocaleService);
+  protected readonly t = this.loc.t;
 
   readonly workDate = input.required<string>();
   readonly editItem = input<WorkItem | undefined>(undefined);
@@ -200,7 +203,7 @@ export class AddWorkItemComponent implements OnInit, AfterViewInit {
       this.dialogRef.nativeElement.close();
       this.saved.emit(result);
     } catch (err) {
-      this.error.set(err instanceof Error ? err.message : 'Failed to save work item.');
+      this.error.set(err instanceof Error ? err.message : this.t('error.saveItem'));
     } finally {
       this.loading.set(false);
     }

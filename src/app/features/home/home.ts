@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { WorkItemService } from '../../core/services/work-item.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { LocaleService } from '../../core/services/locale.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ExportService } from '../../core/services/export.service';
 import { toLocalIso } from '../../core/utils/date.util';
@@ -26,6 +27,8 @@ export class HomeComponent {
   private readonly theme = inject(ThemeService);
   private readonly toast = inject(ToastService);
   private readonly exportService = inject(ExportService);
+  protected readonly loc = inject(LocaleService);
+  protected readonly t = this.loc.t;
 
   /** Target hours for a full work day, used by the daily goal progress bar. */
   readonly dailyGoalHours = 8;
@@ -75,11 +78,11 @@ export class HomeComponent {
   exportDay() {
     const items = this.entries();
     if (!items.length) {
-      this.toast.error('No work items to export for this day');
+      this.toast.error(this.t('toast.noItemsToExport'));
       return;
     }
     this.exportService.downloadCsv(items, `hours-${this.selectedDateIso()}`);
-    this.toast.success('Day exported as CSV');
+    this.toast.success(this.t('toast.dayExported'));
   }
 
   constructor() {
@@ -96,7 +99,7 @@ export class HomeComponent {
       const data = await this.workItemService.getEntriesForDate(date);
       this.entries.set(data);
     } catch (err) {
-      this.error.set(err instanceof Error ? err.message : 'Failed to load work items.');
+      this.error.set(err instanceof Error ? err.message : this.t('error.loadItems'));
     } finally {
       this.loading.set(false);
     }
@@ -139,9 +142,9 @@ export class HomeComponent {
       await navigator.clipboard.writeText(decimal);
       this.copiedItemId.set(entry.id);
       setTimeout(() => this.copiedItemId.set(null), 2000);
-      this.toast.success(`Copied ${decimal}h to clipboard`);
+      this.toast.success(this.t('toast.copied', { value: decimal }));
     } catch {
-      this.toast.error('Could not copy to clipboard');
+      this.toast.error(this.t('toast.copyFailed'));
     }
   }
 
@@ -159,11 +162,11 @@ export class HomeComponent {
         list.map((e) => (e.id === item.id ? item : e)).sort(sortByFirstEntry),
       );
       this.editingItem.set(null);
-      this.toast.success('Work item updated');
+      this.toast.success(this.t('toast.itemUpdated'));
     } else {
       this.entries.update((list) => [...list, item].sort(sortByFirstEntry));
       this.showAddForm.set(false);
-      this.toast.success('Work item added');
+      this.toast.success(this.t('toast.itemAdded'));
     }
   }
 
@@ -179,9 +182,9 @@ export class HomeComponent {
     try {
       const updated = await this.workItemService.approveWorkItem(entry.id, !entry.approved);
       this.entries.update((list) => list.map((e) => (e.id === updated.id ? updated : e)));
-      this.toast.success(updated.approved ? 'Item approved' : 'Approval removed');
+      this.toast.success(updated.approved ? this.t('toast.itemApproved') : this.t('toast.approvalRemoved'));
     } catch (err) {
-      this.approveError.set(err instanceof Error ? err.message : 'Failed to update approval.');
+      this.approveError.set(err instanceof Error ? err.message : this.t('error.updateApproval'));
       this.approveErrorItemId.set(entry.id);
     } finally {
       this.approvingItemId.set(null);
@@ -195,9 +198,9 @@ export class HomeComponent {
       await this.workItemService.deleteWorkItem(id);
       this.entries.update((list) => list.filter((e) => e.id !== id));
       this.deletingItemId.set(null);
-      this.toast.success('Work item deleted');
+      this.toast.success(this.t('toast.itemDeleted'));
     } catch (err) {
-      this.deleteError.set(err instanceof Error ? err.message : 'Failed to delete work item.');
+      this.deleteError.set(err instanceof Error ? err.message : this.t('error.deleteItem'));
     } finally {
       this.deleteLoading.set(false);
     }

@@ -1,7 +1,7 @@
 <div
   class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-3"
   role="group"
-  [attr.aria-label]="'Calendar, ' + (viewMonth() | date: 'MMMM yyyy')"
+  [attr.aria-label]="t('calendar.aria', { month: (viewMonth() | date: 'MMMM yyyy' : undefined : loc.dateLocale()) ?? '' })"
 >
   <!-- Month navigation header -->
   <div class="flex items-center justify-between mb-2 px-1">
@@ -9,7 +9,8 @@
       type="button"
       class="rounded-lg p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
       (click)="prevMonth()"
-      aria-label="Previous month"
+      [attr.aria-label]="t('calendar.previousMonth')"
+      [attr.title]="t('calendar.previousMonth')"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -17,7 +18,7 @@
     </button>
 
     <span class="text-sm font-semibold text-gray-800 dark:text-gray-100" aria-live="polite" aria-atomic="true">
-      {{ viewMonth() | date: 'MMMM yyyy' }}
+      {{ viewMonth() | date: 'MMMM yyyy' : undefined : loc.dateLocale() }}
     </span>
 
     <button
@@ -25,7 +26,8 @@
       class="rounded-lg p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
       (click)="nextMonth()"
       [disabled]="!canGoNextMonth()"
-      aria-label="Next month"
+      [attr.aria-label]="t('calendar.nextMonth')"
+      [attr.title]="t('calendar.nextMonth')"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -34,10 +36,10 @@
   </div>
 
   <!-- Calendar grid -->
-  <table class="w-full border-collapse" role="grid" [attr.aria-label]="viewMonth() | date: 'MMMM yyyy'">
+  <table class="w-full border-collapse" role="grid" [attr.aria-label]="viewMonth() | date: 'MMMM yyyy' : undefined : loc.dateLocale()">
     <thead>
       <tr role="row">
-        @for (day of weekDays; track day) {
+        @for (day of weekDays(); track day) {
           <th
             scope="col"
             role="columnheader"
@@ -75,7 +77,8 @@
                   [class.hover:bg-blue-50]="!day.isSelected && !day.isFuture"
                   [class.dark:hover:bg-blue-950]="!day.isSelected && !day.isFuture"
                   [disabled]="day.isFuture"
-                  [attr.aria-label]="day.date | date: 'EEEE, MMMM d, yyyy'"
+                  [attr.aria-label]="day.date | date: 'fullDate' : undefined : loc.dateLocale()"
+                  [attr.title]="day.date | date: 'fullDate' : undefined : loc.dateLocale()"
                   [attr.aria-selected]="day.isSelected"
                   [attr.aria-current]="day.isToday ? 'date' : null"
                   (click)="selectDay(day)"
@@ -98,7 +101,7 @@
         class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 px-3 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         (click)="goToToday()"
       >
-        Today
+        {{ t('common.today') }}
       </button>
     </div>
   }

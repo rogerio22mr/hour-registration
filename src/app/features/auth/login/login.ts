@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { LocaleService } from '../../../core/services/locale.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,8 @@ export class LoginComponent {
   private readonly supabase = inject(SupabaseService);
   private readonly router = inject(Router);
   private readonly theme = inject(ThemeService);
+  protected readonly loc = inject(LocaleService);
+  protected readonly t = this.loc.t;
 
   readonly isDark = this.theme.isDark;
 

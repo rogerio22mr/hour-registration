@@ -3,11 +3,13 @@ import {
   Component,
   computed,
   effect,
+  inject,
   input,
   output,
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { LocaleService } from '../../../core/services/locale.service';
 import { toLocalIso } from '../../../core/utils/date.util';
 
 export interface CalendarDay {
@@ -26,11 +28,14 @@ export interface CalendarDay {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalendarComponent {
+  protected readonly loc = inject(LocaleService);
+  protected readonly t = this.loc.t;
+
   readonly selectedDate = input.required<Date>();
   readonly maxDate = input<Date>(new Date());
   readonly dateSelected = output<Date>();
 
-  readonly weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  readonly weekDays = this.loc.weekDayShorts;
 
   readonly viewMonth = signal(new Date());
 

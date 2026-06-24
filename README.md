@@ -19,6 +19,8 @@ A personal time-tracking web app built with Angular 21 and Supabase. Log daily w
 - **Daily goal progress** — a progress bar tracks the day's total against an 8-hour goal
 - **Weekly summary** — a `/summary` view with per-day bar chart, week total, average and days worked
 - **Dark mode** — light/dark theme toggle that follows the system preference and persists across sessions
+- **Custom accent color** — pick your own accent color for light and dark mode on the `/settings` screen, with a live preview; the whole UI recolors instantly and the choice syncs across devices
+- **Bilingual (English / Portuguese)** — runtime language toggle on the `/settings` screen; defaults to the browser language and persists across sessions. Dates and numbers are localized via Angular's `DatePipe` (`en-US` / `pt-BR`)
 - **Progressive Web App** — installable and works offline via a service worker
 - **Quick time fill** — press `h` on any time field to insert the current time
 - **Timezone-aware** — times are stored as UTC and displayed in the user's local timezone; day selection uses local dates
@@ -110,6 +112,37 @@ create policy "Users can approve their own work items"
 This adds the `approved`, `approved_at` and `approved_by` columns (existing rows
 default to "not approved"), an index for filtering by approval status, and an RLS
 policy so a user can approve/unapprove only their own items.
+
+### `user_preferences`
+
+Stores per-user UI preferences — currently the customizable accent colors for light
+and dark mode. One row per user (`user_id` is the primary key), protected by RLS so a
+user can only read/write their own row. The client upserts on `user_id`. Run this in
+the Supabase SQL editor (idempotent, safe to re-run):
+
+```sql
+create table if not exists user_preferences (
+  user_id      uuid primary key references auth.users(id) on delete cascade,
+  accent_light text not null default '#2563eb',
+  accent_dark  text not null default '#60a5fa',
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+alter table user_preferences enable row level security;
+
+drop policy if exists "Users can manage their own preferences" on user_preferences;
+
+create policy "Users can manage their own preferences"
+  on user_preferences
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+```
+
+Accent colors are stored as hex strings (e.g. `#2563eb`). The app derives the full
+blue/indigo palette from them at runtime via CSS `color-mix()`, so changing the two
+accent values recolors the entire UI.
 
 ## Getting started
 

@@ -5,6 +5,49 @@
 /* Enable class-based dark mode (toggled via ThemeService on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Customizable accent color.
+ *
+ * Tailwind v4 compiles color utilities (e.g. `bg-blue-600`) to `var(--color-blue-600)`,
+ * so re-mapping the blue/indigo palettes to derive from a single `--hr-accent` lets the
+ * user recolor the whole app without touching any component. The active accent switches
+ * automatically between light and dark via the `.dark` class. The per-user values are
+ * injected as inline `--hr-accent-light` / `--hr-accent-dark` by PreferencesService.
+ *
+ * These rules are intentionally unlayered so they override Tailwind's `@theme` defaults.
+ */
+:root {
+  --hr-accent-light: #2563eb; /* default: blue-600 */
+  --hr-accent-dark: #60a5fa; /* default: blue-400 */
+  --hr-accent: var(--hr-accent-light);
+}
+
+.dark {
+  --hr-accent: var(--hr-accent-dark);
+}
+
+:root {
+  /* Light tints (mix toward white) */
+  --color-blue-50: color-mix(in oklab, var(--hr-accent), white 92%);
+  --color-blue-100: color-mix(in oklab, var(--hr-accent), white 84%);
+  --color-blue-200: color-mix(in oklab, var(--hr-accent), white 70%);
+  --color-blue-300: color-mix(in oklab, var(--hr-accent), white 55%);
+  --color-blue-400: color-mix(in oklab, var(--hr-accent), white 35%);
+  --color-blue-500: color-mix(in oklab, var(--hr-accent), white 16%);
+  --color-blue-600: var(--hr-accent);
+  /* Dark shades (mix toward black) */
+  --color-blue-700: color-mix(in oklab, var(--hr-accent), black 18%);
+  --color-blue-800: color-mix(in oklab, var(--hr-accent), black 34%);
+  --color-blue-900: color-mix(in oklab, var(--hr-accent), black 50%);
+  --color-blue-950: color-mix(in oklab, var(--hr-accent), black 64%);
+
+  /* Indigo (used in the header/summary gradients) tracks the same accent */
+  --color-indigo-300: color-mix(in oklab, var(--hr-accent), white 55%);
+  --color-indigo-400: color-mix(in oklab, var(--hr-accent), white 35%);
+  --color-indigo-500: color-mix(in oklab, var(--hr-accent), white 16%);
+  --color-indigo-600: color-mix(in oklab, var(--hr-accent), black 18%);
+}
+
 /* Smooth theme transition for color-related properties */
 @layer base {
   body {
