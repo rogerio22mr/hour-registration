@@ -11,7 +11,7 @@
           (click)="exportDay()"
           [disabled]="loading() || entries().length === 0"
           [attr.aria-label]="t('home.exportDay')"
-          [attr.title]="t('home.exportDay')"
+          [matTooltip]="t('home.exportDay')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -32,7 +32,7 @@
           class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           (click)="toggleTheme()"
           [attr.aria-label]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
-          [attr.title]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
+          [matTooltip]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
           [attr.aria-pressed]="isDark()"
         >
           @if (isDark()) {
@@ -53,7 +53,7 @@
           routerLink="/settings"
           class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           [attr.aria-label]="t('home.settings')"
-          [attr.title]="t('home.settings')"
+          [matTooltip]="t('home.settings')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="3"/>
@@ -82,7 +82,7 @@
             class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             (click)="previousDay()"
             [attr.aria-label]="t('home.previousDay')"
-            [attr.title]="t('home.previousDay')"
+            [matTooltip]="t('home.previousDay')"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -117,7 +117,7 @@
               [attr.aria-expanded]="showCalendar()"
               aria-controls="calendar-panel"
               [attr.aria-label]="t('home.openCalendar')"
-              [attr.title]="t('home.openCalendar')"
+              [matTooltip]="t('home.openCalendar')"
               (click)="showCalendar.update(v => !v)"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -134,7 +134,7 @@
               (click)="nextDay()"
               [disabled]="isToday()"
               [attr.aria-label]="t('home.nextDay')"
-              [attr.title]="t('home.nextDay')"
+              [matTooltip]="t('home.nextDay')"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -324,7 +324,7 @@
                       type="button"
                       class="rounded-lg p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                       [attr.aria-label]="t('home.copyAria', { title: entry.title })"
-                      [attr.title]="t('home.copyAria', { title: entry.title })"
+                      [matTooltip]="t('home.copyAria', { title: entry.title })"
                       (click)="copyHours(entry)"
                     >
                       @if (copiedItemId() === entry.id) {
@@ -354,7 +354,7 @@
                     [class.hover:bg-green-50]="!entry.approved"
                     [class.dark:hover:bg-green-950/50]="!entry.approved"
                     [attr.aria-label]="entry.approved ? t('home.unapproveAria', { title: entry.title }) : t('home.approveAria', { title: entry.title })"
-                    [attr.title]="entry.approved ? t('home.unapproveAria', { title: entry.title }) : t('home.approveAria', { title: entry.title })"
+                    [matTooltip]="entry.approved ? t('home.unapproveAria', { title: entry.title }) : t('home.approveAria', { title: entry.title })"
                     [attr.aria-pressed]="entry.approved"
                     [disabled]="approvingItemId() === entry.id"
                     [attr.aria-busy]="approvingItemId() === entry.id"
@@ -383,7 +383,7 @@
                   <!-- Wrapping span carries the title so the tooltip still shows when the button is disabled (approved). -->
                   <span
                     class="inline-flex"
-                    [attr.title]="entry.approved ? t('home.unapproveBeforeEditing') : t('home.editAria', { title: entry.title })"
+                    [matTooltip]="entry.approved ? t('home.unapproveBeforeEditing') : t('home.editAria', { title: entry.title })"
                   >
                   <button
                     type="button"
@@ -399,7 +399,7 @@
                   </span>
                   <span
                     class="inline-flex"
-                    [attr.title]="entry.approved ? t('home.unapproveBeforeDeleting') : t('home.deleteAria', { title: entry.title })"
+                    [matTooltip]="entry.approved ? t('home.unapproveBeforeDeleting') : t('home.deleteAria', { title: entry.title })"
                   >
                   <button
                     type="button"

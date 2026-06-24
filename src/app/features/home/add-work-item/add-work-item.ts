@@ -13,13 +13,14 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { WorkItemService } from '../../../core/services/work-item.service';
 import { LocaleService } from '../../../core/services/locale.service';
 import { WorkItem } from '../../../core/models/work-item.model';
 
 @Component({
   selector: 'app-add-work-item',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatTooltipModule],
   templateUrl: './add-work-item.html',
   styleUrl: './add-work-item.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

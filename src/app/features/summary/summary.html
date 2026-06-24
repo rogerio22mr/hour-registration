@@ -6,7 +6,7 @@
           routerLink="/"
           class="rounded-lg p-2 -ml-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           [attr.aria-label]="t('summary.back')"
-          [attr.title]="t('summary.back')"
+          [matTooltip]="t('summary.back')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -23,7 +23,7 @@
         (click)="exportCsv()"
         [disabled]="loading() || !hasData()"
         [attr.aria-label]="t('summary.exportWeek')"
-        [attr.title]="t('summary.exportWeek')"
+        [matTooltip]="t('summary.exportWeek')"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -35,7 +35,7 @@
         class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         (click)="toggleTheme()"
         [attr.aria-label]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
-        [attr.title]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
+        [matTooltip]="isDark() ? t('common.switchToLight') : t('common.switchToDark')"
         [attr.aria-pressed]="isDark()"
       >
         @if (isDark()) {
@@ -64,7 +64,7 @@
         class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         (click)="previousWeek()"
         [attr.aria-label]="t('summary.previousWeek')"
-        [attr.title]="t('summary.previousWeek')"
+        [matTooltip]="t('summary.previousWeek')"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -86,7 +86,7 @@
         (click)="nextWeek()"
         [disabled]="isCurrentWeek()"
         [attr.aria-label]="t('summary.nextWeek')"
-        [attr.title]="t('summary.nextWeek')"
+        [matTooltip]="t('summary.nextWeek')"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />

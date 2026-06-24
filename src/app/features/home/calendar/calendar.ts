@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { LocaleService } from '../../../core/services/locale.service';
 import { toLocalIso } from '../../../core/utils/date.util';
 
@@ -22,7 +23,7 @@ export interface CalendarDay {
 
 @Component({
   selector: 'app-calendar',
-  imports: [DatePipe],
+  imports: [DatePipe, MatTooltipModule],
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { WorkItemService } from '../../core/services/work-item.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { LocaleService } from '../../core/services/locale.service';
@@ -20,7 +21,7 @@ interface DayBucket {
 
 @Component({
   selector: 'app-summary',
-  imports: [DatePipe, DecimalPipe, RouterLink],
+  imports: [DatePipe, DecimalPipe, RouterLink, MatTooltipModule],
   templateUrl: './summary.html',
   styleUrl: './summary.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

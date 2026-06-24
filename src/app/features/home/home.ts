@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { WorkItemService } from '../../core/services/work-item.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { ThemeService } from '../../core/services/theme.service';
@@ -15,7 +16,7 @@ import { CalendarComponent } from './calendar/calendar';
 
 @Component({
   selector: 'app-home',
-  imports: [DatePipe, DecimalPipe, RouterLink, AddWorkItemComponent, CalendarComponent],
+  imports: [DatePipe, DecimalPipe, RouterLink, MatTooltipModule, AddWorkItemComponent, CalendarComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
