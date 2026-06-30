@@ -15,6 +15,12 @@ export const routes: Routes = [
       import('./features/summary/summary').then((m) => m.SummaryComponent),
   },
   {
+    path: 'bank',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/bank/bank').then((m) => m.BankComponent),
+  },
+  {
     path: 'settings',
     canActivate: [authGuard],
     loadComponent: () =>

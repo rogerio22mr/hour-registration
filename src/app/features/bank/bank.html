@@ -1,0 +1,246 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 transition-colors">
+  <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800 px-4 py-4 transition-colors">
+    <div class="max-w-2xl mx-auto flex items-center gap-2">
+      <a
+        routerLink="/"
+        class="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        [attr.aria-label]="t('bank.back')"
+        [matTooltip]="t('bank.back')"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </a>
+      <h1 class="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
+        {{ t('bank.title') }}
+      </h1>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-8" id="main-content">
+    <!-- Balance card -->
+    @if (result(); as r) {
+      <div
+        class="mb-8 rounded-2xl px-5 py-5 text-white shadow-lg bg-gradient-to-br transition-colors hr-animate-in"
+        [class.from-emerald-500]="isPositive()"
+        [class.to-green-600]="isPositive()"
+        [class.shadow-emerald-500/20]="isPositive()"
+        [class.from-rose-500]="!isPositive()"
+        [class.to-red-600]="!isPositive()"
+        [class.shadow-rose-500/20]="!isPositive()"
+        [attr.aria-label]="t('bank.currentBalanceAria')"
+      >
+        <span class="text-sm font-medium text-white/80">{{ t('bank.currentBalance') }}</span>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span class="text-4xl font-bold tabular-nums">{{ signedHours(r.balance) }}</span>
+          <span class="text-sm font-medium text-white/70 tabular-nums">{{ r.balance | number: '1.2-2' }}h</span>
+        </div>
+        @if (r.lastCountedDate) {
+          <p class="mt-2 text-xs text-white/70">
+            {{ t('bank.countedUntil', { date: (r.lastCountedDate | date: 'longDate' : undefined : loc.dateLocale()) ?? '' }) }}
+          </p>
+        } @else {
+          <p class="mt-2 text-xs text-white/70">{{ t('bank.noDaysCounted') }}</p>
+        }
+      </div>
+
+      <!-- Breakdown -->
+      <dl class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+          <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('bank.initialBalance') }}</dt>
+          <dd class="mt-0.5 text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{{ signedHours(r.initialBalance) }}</dd>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+          <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('bank.accrued') }}</dt>
+          <dd
+            class="mt-0.5 text-lg font-semibold tabular-nums"
+            [class.text-emerald-600]="r.accrued >= 0"
+            [class.dark:text-emerald-400]="r.accrued >= 0"
+            [class.text-rose-600]="r.accrued < 0"
+            [class.dark:text-rose-400]="r.accrued < 0"
+          >{{ signedHours(r.accrued) }}</dd>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+          <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('bank.workingDays') }}</dt>
+          <dd class="mt-0.5 text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{{ r.workingDays }}</dd>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+          <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('bank.workedHours') }}</dt>
+          <dd class="mt-0.5 text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{{ formatHours(r.workedHours) }}</dd>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
+          <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('bank.expectedHours') }}</dt>
+          <dd class="mt-0.5 text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{{ formatHours(r.expectedHours) }}</dd>
+        </div>
+      </dl>
+    }
+
+    <!-- Configuration form -->
+    <section aria-labelledby="config-heading">
+      <h2 id="config-heading" class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        {{ t('bank.configTitle') }}
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('bank.configDescription') }}</p>
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="mt-5 space-y-4" [attr.aria-label]="t('bank.configTitle')">
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+          <label for="bank-initial" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            {{ t('bank.initialBalance') }}
+          </label>
+          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('bank.initialBalanceHint') }}</p>
+          <input
+            id="bank-initial"
+            type="text"
+            inputmode="text"
+            placeholder="2:15"
+            formControlName="initialBalance"
+            class="mt-2 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 tabular-nums focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          />
+          @if (form.controls.initialBalance.invalid && form.controls.initialBalance.touched) {
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400" role="alert">{{ t('bank.initialBalanceFormat') }}</p>
+          }
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+          <label for="bank-start" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            {{ t('bank.startDate') }}
+          </label>
+          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('bank.startDateHint') }}</p>
+          <input
+            id="bank-start"
+            type="date"
+            formControlName="startDate"
+            class="mt-2 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 tabular-nums focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          />
+          @if (form.controls.startDate.invalid && form.controls.startDate.touched) {
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400" role="alert">{{ t('bank.startDateRequired') }}</p>
+          }
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+          <label for="bank-goal" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            {{ t('bank.dailyGoal') }}
+          </label>
+          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('bank.dailyGoalHint') }}</p>
+          <input
+            id="bank-goal"
+            type="number"
+            step="0.5"
+            min="0.1"
+            formControlName="dailyGoal"
+            class="mt-2 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 tabular-nums focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          />
+          @if (form.controls.dailyGoal.invalid && form.controls.dailyGoal.touched) {
+            <p class="mt-1 text-xs text-red-600 dark:text-red-400" role="alert">{{ t('bank.dailyGoalRequired') }}</p>
+          }
+        </div>
+
+        <div class="flex items-center gap-3 pt-1">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-500/30 transition hover:bg-blue-700 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+            [disabled]="saving()"
+            [attr.aria-busy]="saving()"
+          >
+            @if (saving()) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+              {{ t('common.saving') }}
+            } @else {
+              {{ t('bank.save') }}
+            }
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+            (click)="calculate()"
+            [disabled]="calculating()"
+            [attr.aria-busy]="calculating()"
+          >
+            {{ t('bank.calculate') }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Manual non-working days -->
+    <section aria-labelledby="offdays-heading" class="mt-10">
+      <h2 id="offdays-heading" class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        {{ t('bank.offDaysTitle') }}
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('bank.offDaysDescription') }}</p>
+
+      <form
+        [formGroup]="offDayForm"
+        (ngSubmit)="addOffDay()"
+        class="mt-4 flex flex-wrap items-end gap-3"
+        [attr.aria-label]="t('bank.offDaysTitle')"
+      >
+        <div>
+          <label for="offday-date" class="block text-xs font-medium text-gray-600 dark:text-gray-300">{{ t('bank.offDayDate') }}</label>
+          <input
+            id="offday-date"
+            type="date"
+            formControlName="day"
+            class="mt-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 tabular-nums focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          />
+        </div>
+        <div class="flex-1 min-w-[10rem]">
+          <label for="offday-label" class="block text-xs font-medium text-gray-600 dark:text-gray-300">{{ t('bank.offDayLabel') }}</label>
+          <input
+            id="offday-label"
+            type="text"
+            formControlName="label"
+            [placeholder]="t('bank.offDayLabelPlaceholder')"
+            class="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          />
+        </div>
+        <button
+          type="submit"
+          class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-500/30 transition hover:bg-blue-700 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="addingOffDay()"
+          [attr.aria-busy]="addingOffDay()"
+        >
+          {{ t('bank.addOffDay') }}
+        </button>
+      </form>
+      @if (offDayForm.controls.day.invalid && offDayForm.controls.day.touched) {
+        <p class="mt-1 text-xs text-red-600 dark:text-red-400" role="alert">{{ t('bank.offDayDateRequired') }}</p>
+      }
+
+      @if (offDays().length > 0) {
+        <ul class="mt-4 space-y-2" [attr.aria-label]="t('bank.offDaysTitle')">
+          @for (off of offDays(); track off.day) {
+            <li class="flex items-center justify-between gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5">
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 tabular-nums">
+                  {{ parseDay(off.day) | date: 'fullDate' : undefined : loc.dateLocale() }}
+                </p>
+                @if (off.label) {
+                  <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ off.label }}</p>
+                }
+              </div>
+              <button
+                type="button"
+                class="rounded-lg p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                [attr.aria-label]="t('bank.removeOffDayAria', { date: (parseDay(off.day) | date: 'shortDate' : undefined : loc.dateLocale()) ?? '' })"
+                [matTooltip]="t('common.remove')"
+                [disabled]="removingOffDay() === off.day"
+                [attr.aria-busy]="removingOffDay() === off.day"
+                (click)="removeOffDay(off.day)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="mt-4 text-sm text-gray-400 dark:text-gray-500">{{ t('bank.offDaysEmpty') }}</p>
+      }
+    </section>
+  </main>
+</div>

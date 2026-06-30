@@ -56,6 +56,8 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     'home.deleteConfirm': 'Delete this work item?',
     'home.deleting': 'Deleting…',
     'home.delete': 'Delete',
+    'home.bank': 'Time bank',
+    'home.bankAria': 'Open time bank',
 
     // Toasts & errors
     'toast.noItemsToExport': 'No work items to export for this day',
@@ -141,6 +143,49 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     // Toast
     'toast.dismiss': 'Dismiss notification',
 
+    // Time bank
+    'bank.title': 'Time bank',
+    'bank.back': 'Back to home',
+    'bank.currentBalance': 'Current balance',
+    'bank.currentBalanceAria': 'Current time bank balance',
+    'bank.countedUntil': 'Counted up to {date} (today never counts)',
+    'bank.noDaysCounted': 'No working days counted yet.',
+    'bank.initialBalance': 'Initial balance',
+    'bank.initialBalanceHint': 'Hours already in the bank at the start date, as h:mm (e.g. 2:15). Use a leading minus for a deficit (e.g. -1:45).',
+    'bank.initialBalanceFormat': 'Use the h:mm format, e.g. 2:15 or -1:45.',
+    'bank.accrued': 'Accrued',
+    'bank.workingDays': 'Working days',
+    'bank.workedHours': 'Worked',
+    'bank.expectedHours': 'Expected',
+    'bank.configTitle': 'Configuration',
+    'bank.configDescription':
+      'The balance adds, for each working day (Mon–Fri, excluding Brazilian national holidays) from the start date up to yesterday, the difference between hours worked and the daily goal. The current day never counts.',
+    'bank.startDate': 'Start date',
+    'bank.startDateHint': 'The calculation starts on this day (inclusive).',
+    'bank.startDateRequired': 'Start date is required.',
+    'bank.dailyGoal': 'Daily goal (hours)',
+    'bank.dailyGoalHint': 'Expected hours per working day.',
+    'bank.dailyGoalRequired': 'Enter a daily goal greater than 0.',
+    'bank.save': 'Save & calculate',
+    'bank.calculate': 'Recalculate',
+    'bank.saved': 'Time bank saved',
+    'bank.saveError': 'Could not save the time bank.',
+    'bank.calcError': 'Could not calculate the balance.',
+    'bank.loadError': 'Could not load the time bank.',
+    'bank.offDaysTitle': 'Non-working days',
+    'bank.offDaysDescription':
+      'Mark extra days off (local holidays, bridges, time off). They are excluded from the calculation on top of the national holidays.',
+    'bank.offDayDate': 'Date',
+    'bank.offDayDateRequired': 'Pick a date.',
+    'bank.offDayLabel': 'Note',
+    'bank.offDayLabelPlaceholder': 'e.g. Local holiday, day off…',
+    'bank.addOffDay': 'Add day',
+    'bank.removeOffDayAria': 'Remove non-working day {date}',
+    'bank.offDaysEmpty': 'No extra non-working days marked.',
+    'bank.offDayAdded': 'Non-working day added',
+    'bank.offDayRemoved': 'Non-working day removed',
+    'bank.offDayError': 'Could not update non-working days.',
+
     // Settings
     'settings.title': 'Settings',
     'settings.back': 'Back to home',
@@ -216,6 +261,8 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     'home.deleteConfirm': 'Excluir este item de trabalho?',
     'home.deleting': 'Excluindo…',
     'home.delete': 'Excluir',
+    'home.bank': 'Banco de horas',
+    'home.bankAria': 'Abrir banco de horas',
 
     // Toasts & errors
     'toast.noItemsToExport': 'Nenhum item de trabalho para exportar neste dia',
@@ -300,6 +347,49 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
 
     // Toast
     'toast.dismiss': 'Dispensar notificação',
+
+    // Time bank
+    'bank.title': 'Banco de horas',
+    'bank.back': 'Voltar para o início',
+    'bank.currentBalance': 'Saldo atual',
+    'bank.currentBalanceAria': 'Saldo atual do banco de horas',
+    'bank.countedUntil': 'Calculado até {date} (o dia atual nunca entra)',
+    'bank.noDaysCounted': 'Nenhum dia útil contabilizado ainda.',
+    'bank.initialBalance': 'Saldo inicial',
+    'bank.initialBalanceHint': 'Horas já existentes no banco na data de início, no formato h:mm (ex: 2:15). Use o sinal de menos para débito (ex: -1:45).',
+    'bank.initialBalanceFormat': 'Use o formato h:mm, ex: 2:15 ou -1:45.',
+    'bank.accrued': 'Acumulado',
+    'bank.workingDays': 'Dias úteis',
+    'bank.workedHours': 'Trabalhado',
+    'bank.expectedHours': 'Previsto',
+    'bank.configTitle': 'Configuração',
+    'bank.configDescription':
+      'O saldo soma, para cada dia útil (seg–sex, exceto feriados nacionais brasileiros) da data de início até ontem, a diferença entre as horas trabalhadas e a meta diária. O dia atual nunca entra na conta.',
+    'bank.startDate': 'Data de início',
+    'bank.startDateHint': 'O cálculo começa neste dia (inclusive).',
+    'bank.startDateRequired': 'A data de início é obrigatória.',
+    'bank.dailyGoal': 'Meta diária (horas)',
+    'bank.dailyGoalHint': 'Horas previstas por dia útil.',
+    'bank.dailyGoalRequired': 'Informe uma meta diária maior que 0.',
+    'bank.save': 'Salvar e calcular',
+    'bank.calculate': 'Recalcular',
+    'bank.saved': 'Banco de horas salvo',
+    'bank.saveError': 'Não foi possível salvar o banco de horas.',
+    'bank.calcError': 'Não foi possível calcular o saldo.',
+    'bank.loadError': 'Não foi possível carregar o banco de horas.',
+    'bank.offDaysTitle': 'Dias não úteis',
+    'bank.offDaysDescription':
+      'Marque dias não úteis extras (feriados locais, pontes, folgas). Eles são excluídos do cálculo além dos feriados nacionais.',
+    'bank.offDayDate': 'Data',
+    'bank.offDayDateRequired': 'Escolha uma data.',
+    'bank.offDayLabel': 'Observação',
+    'bank.offDayLabelPlaceholder': 'ex: Feriado municipal, folga…',
+    'bank.addOffDay': 'Adicionar dia',
+    'bank.removeOffDayAria': 'Remover dia não útil {date}',
+    'bank.offDaysEmpty': 'Nenhum dia não útil extra marcado.',
+    'bank.offDayAdded': 'Dia não útil adicionado',
+    'bank.offDayRemoved': 'Dia não útil removido',
+    'bank.offDayError': 'Não foi possível atualizar os dias não úteis.',
 
     // Settings
     'settings.title': 'Configurações',

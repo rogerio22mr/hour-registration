@@ -18,6 +18,7 @@ A personal time-tracking web app built with Angular 21 and Supabase. Log daily w
 - **Toast notifications** — non-blocking feedback for save, approve, delete, copy and errors
 - **Daily goal progress** — a progress bar tracks the day's total against an 8-hour goal
 - **Weekly summary** — a `/summary` view with per-day bar chart, week total, average and days worked
+- **Time bank** — a `/bank` view (banco de horas) where you set an initial balance, a start date and a configurable daily goal; the balance accrues `worked − goal` for each working day (Mon–Fri, excluding Brazilian national holidays) from the start date up to yesterday — the current day never counts. You can also mark extra non-working days manually (local holidays, bridges, time off) that are excluded on top of the national holidays
 - **Dark mode** — light/dark theme toggle that follows the system preference and persists across sessions
 - **Custom accent color** — pick your own accent color for light and dark mode on the `/settings` screen, with a live preview; the whole UI recolors instantly and the choice syncs across devices
 - **Bilingual (English / Portuguese)** — runtime language toggle on the `/settings` screen; defaults to the browser language and persists across sessions. Dates and numbers are localized via Angular's `DatePipe` (`en-US` / `pt-BR`)
@@ -143,6 +144,70 @@ create policy "Users can manage their own preferences"
 Accent colors are stored as hex strings (e.g. `#2563eb`). The app derives the full
 blue/indigo palette from them at runtime via CSS `color-mix()`, so changing the two
 accent values recolors the entire UI.
+
+### `time_bank_settings`
+
+Stores the per-user **time bank** (banco de horas) configuration: the initial balance,
+the date the calculation starts from, and the daily goal in hours. One row per user
+(`user_id` is the primary key), protected by RLS. The client upserts on `user_id`.
+
+The balance is computed on the client: for every working day (Mon–Fri, excluding
+Brazilian national holidays — including the movable ones: Carnaval, Good Friday and
+Corpus Christi) from `start_date` up to **yesterday**, it adds `hours worked − daily_goal_hours`.
+The current day never counts. `initial_balance` and `daily_goal_hours` are stored, the
+hours worked come from `work_item_hours`; no extra columns are needed.
+
+Run this in the Supabase SQL editor (idempotent, safe to re-run):
+
+```sql
+create table if not exists time_bank_settings (
+  user_id          uuid primary key references auth.users(id) on delete cascade,
+  initial_balance  float8 not null default 0,
+  start_date       date   not null,
+  daily_goal_hours float8 not null default 8,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+alter table time_bank_settings enable row level security;
+
+drop policy if exists "Users can manage their own time bank" on time_bank_settings;
+
+create policy "Users can manage their own time bank"
+  on time_bank_settings
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+```
+
+### `time_bank_off_days`
+
+Extra non-working days the user marks manually (local holidays, bridges, time off).
+These are excluded from the time-bank calculation **on top of** the automatic Brazilian
+national holidays. One row per user + day (composite primary key), protected by RLS. The
+client upserts on `(user_id, day)`.
+
+Run this in the Supabase SQL editor (idempotent, safe to re-run):
+
+```sql
+create table if not exists time_bank_off_days (
+  user_id    uuid references auth.users(id) on delete cascade not null,
+  day        date not null,
+  label      text not null default '',
+  created_at timestamptz not null default now(),
+  primary key (user_id, day)
+);
+
+alter table time_bank_off_days enable row level security;
+
+drop policy if exists "Users can manage their own off days" on time_bank_off_days;
+
+create policy "Users can manage their own off days"
+  on time_bank_off_days
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+```
 
 ## Getting started
 
